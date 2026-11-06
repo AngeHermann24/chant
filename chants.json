@@ -216,6 +216,100 @@
           ]
         }
       ]
+    },
+    {
+      "numero": "4",
+      "titre": "Il guérit encore",
+      "strophes": [
+        {
+          "type": "strophe",
+          "lignes": [
+            "Voici les miracles qui accompagneront",
+            "Signes et prodiges accompagneront"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Tous ceux qui croient au nom de Jésus"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Il y a une puissance dans ce nom si précieux",
+            "Capable de guérir toutes infirmités"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "En Lui résident les vertus de Dieu"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Il guérit encore, encore, encore",
+            "Le temps des miracles n'est pas passé"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Il est le même hier, aujourd'hui et éternellement",
+            "Il est le même hier, aujourd'hui et éternellement"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Son grand nom est plus fort que les montagnes",
+            "Et sa droite terrasse nos ennemis"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Il est l'abri des affranchis"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "À la croix il a gagné la bataille",
+            "Il a rendu libres tous les captifs"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Au son de Sa voix, les chaînes tombent",
+            "Au son de Sa voix, les chaînes tombent"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Il délivre encore, encore, encore",
+            "Le temps des miracles n'est pas passé"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Il est le même hier, aujourd'hui et éternellement",
+            "Il est le même hier, aujourd'hui et éternellement"
+          ]
+        },
+        {
+          "type": "pont",
+          "lignes": [
+            "Si tu crois, tu verras, tu verras, tu verras",
+            "Ton miracle est là"
+          ]
+        }
+      ]
     }
   ]
 }
