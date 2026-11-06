@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<title>Chants – contrôle</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: #1e1e1e;
+    color: #e8e8e8;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .cache { display: none !important; }
+
+  /* ---------- barre du haut ---------- */
+  #haut {
+    padding: 10px;
+    background: #252526;
+    border-bottom: 1px solid #383838;
+  }
+  #barre-recherche { display: flex; gap: 8px; }
+  #zone-recherche { flex: 1; position: relative; display: flex; }
+  #recherche {
+    flex: 1;
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+  }
+  #recherche:focus { border-color: #5b9bd5; }
+  button {
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #e8e8e8;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover { background: #4a4a4a; }
+  button:active { background: #2d5a80; }
+
+  #suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin-top: 2px;
+    background: #2d2d30;
+    border: 1px solid #555;
+    border-radius: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .sugg {
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .sugg .num { color: #9fc5e8; font-weight: 700; min-width: 36px; }
+  .sugg.actif, .sugg:hover { background: #094771; }
+
+  #statut {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #b8b8b8;
+  }
+  #statut-direct {
+    color: #8fd18f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55%;
+  }
+
+  /* ---------- corps ---------- */
+  #corps { flex: 1; overflow-y: auto; padding: 10px; }
+  #accueil { color: #888; text-align: center; margin-top: 40px; }
+  #chant-titre { font-size: 16px; margin: 2px 0 10px; font-weight: 700; }
+
+  #boutons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  #boutons button { flex: 1; min-width: 78px; }
+  #btn-masquer { border-color: #7a4040; }
+  #btn-masquer:hover { background: #5a3030; }
+
+  /* ---------- liste des strophes ---------- */
+  .item-strophe {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #2d2d30;
+    border: 1px solid #3e3e42;
+    border-left: 4px solid transparent;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+  .item-strophe:hover { background: #37373d; }
+  .item-strophe.direct {
+    border-left-color: #8fd18f;
+    background: #094771;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .badge.strophe   { background: #3b6ea5; }
+  .badge.refrain   { background: #3a7d44; }
+  .badge.interlude { background: #6a5f9e; }
+  .badge.pont      { background: #b0602a; }
+  .badge.autre     { background: #555; }
+  .txt { line-height: 1.4; }
+
+  /* ---------- message d'erreur ---------- */
+  #erreur {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: #5a2020;
+    border: 1px solid #a05050;
+    color: #ffd8d8;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    z-index: 20;
+  }
+</style>
+</head>
+<body>
+
+<div id="haut">
+  <div id="barre-recherche">
+    <div id="zone-recherche">
+      <input id="recherche" type="text" autocomplete="off" spellcheck="false"
+             placeholder="Rechercher un chant (titre ou n°)…">
+      <div id="suggestions" class="cache"></div>
+    </div>
+    <button id="btn-recharger" title="Relire chants.json">Recharger les chants</button>
+  </div>
+  <div id="statut">
+    <span id="statut-chant">Aucun chant sélectionné</span>
+    <span id="statut-direct">À l'écran : —</span>
+  </div>
+</div>
+
+<div id="corps">
+  <div id="accueil">Recherchez un chant par son titre ou son numéro.</div>
+  <div id="chant" class="cache">
+    <div id="chant-titre"></div>
+    <div id="boutons">
+      <button id="btn-prec">◀ Précédent</button>
+      <button id="btn-suiv">Suivant ▶</button>
+      <button id="btn-refrain">Refrain</button>
+      <button id="btn-masquer">Masquer (Échap)</button>
+    </div>
+    <div id="strophes"></div>
+  </div>
+</div>
+
+<div id="erreur" class="cache"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CANAL = "chants-obs";
+  var CLE_MSG = "chants-obs-message";
+  var CLE_DERNIER = "chants-obs-dernier";
+  var TYPES = ["strophe", "refrain", "interlude", "pont"];
+
+  function el(id) { return document.getElementById(id); }
+  var champ = el("recherche");
+  var zoneRecherche = el("zone-recherche");
+  var boiteSugg = el("suggestions");
+  var zoneChant = el("chant");
+  var titreChant = el("chant-titre");
+  var listeStrophes = el("strophes");
+  var statutChant = el("statut-chant");
+  var statutDirect = el("statut-direct");
+  var boiteErreur = el("erreur");
+  var accueil = el("accueil");
+
+  var chants = [];
+  var chantActuel = null;
+  /* ce qui est réellement à l'écran : { numero, stropheIndex, titre, label } ou null */
+  var direct = null;
+  var correspondances = [];
+  var indexSugg = -1;
+
+  /* ---------- communication vers la page d'affichage ---------- */
+  var canal = null;
+  if ("BroadcastChannel" in window) {
+    try { canal = new BroadcastChannel(CANAL); } catch (e) {}
+  }
+
+  function envoyer(msg) {
+    msg.ts = Date.now();
+    if (canal) {
+      try { canal.postMessage(msg); } catch (e) {}
+    }
+    try { localStorage.setItem(CLE_MSG, JSON.stringify(msg)); } catch (e) {}
+  }
+
+  /* ---------- utilitaires ---------- */
+  function norm(s) {
+    return (s == null ? "" : String(s))
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  function etiquettes(chant) {
+    var n = 0;
+    return chant.strophes.map(function (s, i) {
+      var t = (s.type || "").toLowerCase();
+      if (t === "strophe") { n++; return "Strophe " + n; }
+      if (t === "refrain") return "Refrain";
+      if (t === "interlude") return "Interlude";
+      if (t === "pont") return "Pont";
+      return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Partie " + (i + 1);
+    });
+  }
+
+  function trouverChant(numero) {
+    for (var i = 0; i < chants.length; i++) {
+      if (String(chants[i].numero) === String(numero)) return chants[i];
+    }
+    return null;
+  }
+
+  /* ---------- chargement de chants.json ---------- */
+  function chargerChants() {
+    boiteErreur.classList.add("cache");
+    return fetch("chants.json?ts=" + Date.now(), { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        chants = (data && data.chants) || [];
+        retrouverChant();
+        restaurerDirect();
+        majSelection();
+        filtrer();
+      })
+      .catch(function () {
+        afficherErreur("Impossible de lire chants.json. Vérifiez que les fichiers sont servis en http(s) (GitHub Pages, Netlify…) et placés dans le même dossier.");
+      });
+  }
+
+  function afficherErreur(t) {
+    boiteErreur.textContent = t;
+    boiteErreur.classList.remove("cache");
+  }
+
+  /* après (re)chargement : garder le chant courant s'il existe encore,
+     sinon rouvrir le dernier chant mémorisé */
+  function retrouverChant() {
+    var numero = chantActuel ? chantActuel.numero : null;
+    if (numero == null) {
+      try { numero = localStorage.getItem(CLE_DERNIER); } catch (e) {}
+    }
+    if (numero == null) return;
+    var c = trouverChant(numero);
+    if (c) ouvrirChant(c);
+    else { chantActuel = null; }
+  }
+
+  /* restaure ce qui est affiché à l'écran (message mémorisé) */
+  function restaurerDirect() {
+    var msg = null;
+    try { msg = JSON.parse(localStorage.getItem(CLE_MSG) || "null"); } catch (e) {}
+    if (msg && msg.type === "show" && msg.chant) {
+      direct = {
+        numero: String(msg.chant.numero),
+        stropheIndex: msg.stropheIndex,
+        titre: msg.chant.titre || "",
+        label: msg.label || ""
+      };
+    } else {
+      direct = null;
+    }
+  }
+
+  /* ---------- sélection d'un chant ---------- */
+  function ouvrirChant(chant) {
+    chantActuel = chant;
+    try { localStorage.setItem(CLE_DERNIER, String(chant.numero)); } catch (e) {}
+    majSelection();
+  }
+
+  function choisir(chant) {
+    champ.value = "";
+    fermerSuggestions();
+    ouvrirChant(chant);
+    champ.focus();
+  }
+
+  /* ---------- affichage / masquage ---------- */
+  function indexDirectLocal() {
+    if (direct && chantActuel && direct.numero === String(chantActuel.numero)) {
+      return direct.stropheIndex;
+    }
+    return -1;
+  }
+
+  function afficher(i) {
+    if (!chantActuel) return;
+    var s = chantActuel.strophes[i];
+    if (!s) return;
+    var label = etiquettes(chantActuel)[i];
+    direct = {
+      numero: String(chantActuel.numero),
+      stropheIndex: i,
+      titre: chantActuel.titre,
+      label: label
+    };
+    envoyer({
+      type: "show",
+      lignes: s.lignes || [],
+      chant: { numero: chantActuel.numero, titre: chantActuel.titre },
+      stropheIndex: i,
+      stropheType: s.type,
+      label: label
+    });
+    majSelection();
+  }
+
+  function masquer() {
+    direct = null;
+    envoyer({ type: "hide" });
+    majSelection();
+  }
+
+  function clicStrophe(i) {
+    if (indexDirectLocal() === i) masquer();
+    else afficher(i);
+  }
+
+  function precedent() {
+    if (!chantActuel || !chantActuel.strophes.length) return;
+    var cur = indexDirectLocal();
+    afficher(cur <= 0 ? 0 : cur - 1);
+  }
+
+  function suivant() {
+    if (!chantActuel || !chantActuel.strophes.length) return;
+    var cur = indexDirectLocal();
+    var max = chantActuel.strophes.length - 1;
+    var n = cur + 1;
+    if (n > max) n = max;
+    afficher(n);
+  }
+
+  function refrain() {
+    if (!chantActuel) return;
+    var cur = indexDirectLocal();
+    var refrains = [];
+    chantActuel.strophes.forEach(function (s, i) {
+      if ((s.type || "").toLowerCase() === "refrain") refrains.push(i);
+    });
+    if (!refrains.length) return;
+    var cible = refrains[0];
+    for (var k = 0; k < refrains.length; k++) {
+      if (refrains[k] > cur) { cible = refrains[k]; break; }
+    }
+    afficher(cible);
+  }
+
+  /* ---------- rendu ---------- */
+  function majSelection() {
+    if (!chantActuel) {
+      zoneChant.classList.add("cache");
+      accueil.classList.remove("cache");
+      statutChant.textContent = "Aucun chant sélectionné";
+    } else {
+      accueil.classList.add("cache");
+      zoneChant.classList.remove("cache");
+      titreChant.textContent = "n°" + chantActuel.numero + " — " + chantActuel.titre;
+      statutChant.textContent = "Chant : n°" + chantActuel.numero + " — " + chantActuel.titre;
+      rendreStrophes();
+    }
+    statutDirect.textContent = "À l'écran : " +
+      (direct ? (direct.titre ? direct.titre + " · " : "") + direct.label : "—");
+  }
+
+  function rendreStrophes() {
+    listeStrophes.textContent = "";
+    var labs = etiquettes(chantActuel);
+    var idxDirect = indexDirectLocal();
+    var actif = null;
+    chantActuel.strophes.forEach(function (s, i) {
+      var item = document.createElement("div");
+      item.className = "item-strophe";
+      var t = (s.type || "").toLowerCase();
+      var badge = document.createElement("span");
+      badge.className = "badge " + (TYPES.indexOf(t) >= 0 ? t : "autre");
+      badge.textContent = labs[i];
+      var txt = document.createElement("span");
+      txt.className = "txt";
+      (s.lignes || []).forEach(function (l, k) {
+        if (k > 0) txt.appendChild(document.createElement("br"));
+        txt.appendChild(document.createTextNode(l));
+      });
+      item.appendChild(badge);
+      item.appendChild(txt);
+      if (idxDirect === i) {
+        item.classList.add("direct");
+        actif = item;
+      }
+      item.addEventListener("click", function () { clicStrophe(i); });
+      listeStrophes.appendChild(item);
+    });
+    if (actif && actif.scrollIntoView) {
+      try { actif.scrollIntoView({ block: "nearest" }); } catch (e) { actif.scrollIntoView(); }
+    }
+  }
+
+  /* ---------- recherche + suggestions ---------- */
+  function filtrer() {
+    var q = norm(champ.value.replace(/^\s+|\s+$/g, ""));
+    correspondances = [];
+    if (q) {
+      chants.forEach(function (c) {
+        if (norm(c.numero).indexOf(q) >= 0 || norm(c.titre).indexOf(q) >= 0) {
+          correspondances.push(c);
+        }
+      });
+      correspondances.sort(function (a, b) {
+        var an = norm(a.numero).indexOf(q) === 0 ? 0 : 1;
+        var bn = norm(b.numero).indexOf(q) === 0 ? 0 : 1;
+        if (an !== bn) return an - bn;
+        return String(a.numero).localeCompare(String(b.numero), "fr", { numeric: true });
+      });
+    }
+    indexSugg = -1;
+    rendreSuggestions();
+  }
+
+  function rendreSuggestions() {
+    boiteSugg.textContent = "";
+    if (!correspondances.length) {
+      boiteSugg.classList.add("cache");
+      return;
+    }
+    correspondances.slice(0, 12).forEach(function (c, i) {
+      var d = document.createElement("div");
+      d.className = "sugg" + (i === indexSugg ? " actif" : "");
+      var n = document.createElement("span");
+      n.className = "num";
+      n.textContent = c.numero;
+      var t = document.createElement("span");
+      t.textContent = c.titre;
+      d.appendChild(n);
+      d.appendChild(t);
+      d.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        choisir(c);
+      });
+      boiteSugg.appendChild(d);
+    });
+    boiteSugg.classList.remove("cache");
+    var sel = boiteSugg.children[indexSugg];
+    if (sel && sel.scrollIntoView) {
+      try { sel.scrollIntoView({ block: "nearest" }); } catch (e) {}
+    }
+  }
+
+  function fermerSuggestions() {
+    correspondances = [];
+    indexSugg = -1;
+    boiteSugg.classList.add("cache");
+  }
+
+  function suggestionsOuvertes() {
+    return !boiteSugg.classList.contains("cache") && correspondances.length > 0;
+  }
+
+  /* ---------- événements ---------- */
+  champ.addEventListener("input", filtrer);
+  champ.addEventListener("focus", filtrer);
+
+  champ.addEventListener("keydown", function (e) {
+    var ouvertes = suggestionsOuvertes();
+    if (e.key === "ArrowDown") {
+      if (ouvertes) {
+        indexSugg = Math.min(indexSugg + 1, correspondances.length - 1);
+        rendreSuggestions();
+      }
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      if (ouvertes) {
+        indexSugg = Math.max(indexSugg - 1, 0);
+        rendreSuggestions();
+      }
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      var c = indexSugg >= 0 ? correspondances[indexSugg] : correspondances[0];
+      if (c) choisir(c);
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" && champ.value === "") {
+      precedent();
+      e.preventDefault();
+    } else if (e.key === "ArrowRight" && champ.value === "") {
+      suivant();
+      e.preventDefault();
+    } else if (e.key === "Escape") {
+      if (ouvertes) fermerSuggestions();
+      else { masquer(); champ.blur(); }
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target === champ) return; /* géré par le champ de recherche */
+    if (e.key === "ArrowRight") { suivant(); e.preventDefault(); }
+    else if (e.key === "ArrowLeft") { precedent(); e.preventDefault(); }
+    else if (e.key === "Escape") { masquer(); }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!zoneRecherche.contains(e.target)) fermerSuggestions();
+  });
+
+  el("btn-prec").addEventListener("click", precedent);
+  el("btn-suiv").addEventListener("click", suivant);
+  el("btn-refrain").addEventListener("click", refrain);
+  el("btn-masquer").addEventListener("click", masquer);
+  el("btn-recharger").addEventListener("click", function () {
+    chargerChants();
+  });
+
+  chargerChants();
+})();
+</script>
+</body>
+</html>

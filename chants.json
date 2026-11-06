@@ -1,0 +1,105 @@
+{
+  "chants": [
+    {
+      "numero": "1",
+      "titre": "À toi la gloire",
+      "strophes": [
+        {
+          "type": "strophe",
+          "lignes": [
+            "À toi la gloire, ô Ressuscité !",
+            "À toi la victoire pour l'éternité !"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Brillant de lumière, l'ange est descendu,",
+            "Il roule la pierre du tombeau vaincu."
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Vois-le paraître : c'est lui, c'est Jésus,",
+            "Ton Sauveur, ton Maître ! Mort, où est ton aiguillon ?"
+          ]
+        }
+      ]
+    },
+    {
+      "numero": "2",
+      "titre": "Mon espérance",
+      "strophes": [
+        {
+          "type": "strophe",
+          "lignes": [
+            "Quand tout vacille autour de moi,",
+            "Tu restes mon roc et ma foi."
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Mon espérance est en toi,",
+            "Seigneur, tu ne changes pas."
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Dans la tempête et dans la nuit,",
+            "Ta main me garde et me conduit."
+          ]
+        },
+        {
+          "type": "pont",
+          "lignes": [
+            "Tu es fidèle, tu es le même,",
+            "Hier, aujourd'hui, éternellement."
+          ]
+        },
+        {
+          "type": "interlude",
+          "lignes": [
+            "( instrumental )"
+          ]
+        }
+      ]
+    },
+    {
+      "numero": "12",
+      "titre": "Venez, chantons",
+      "strophes": [
+        {
+          "type": "strophe",
+          "lignes": [
+            "Venez, chantons au Dieu de grâce,",
+            "Élevons nos voix vers le ciel."
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Gloire à Dieu, gloire à Dieu,",
+            "Pour l'amour qu'il nous a donné !"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Il nous relève quand nous tombons,",
+            "Son pardon est nouveau chaque jour."
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Gloire à Dieu, gloire à Dieu,",
+            "Pour l'amour qu'il nous a donné !"
+          ]
+        }
+      ]
+    }
+  ]
+}

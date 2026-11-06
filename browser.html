@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<title>Chants – affichage</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+  }
+  #cadre {
+    position: fixed;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0 30px;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+  #cadre.bas    { bottom: 40px; }
+  #cadre.haut   { top: 40px; }
+  #cadre.centre { top: 50%; transform: translateY(-50%); }
+  #texte {
+    opacity: 0;
+    transition: opacity .25s ease-in-out;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1.3;
+    text-shadow: 0 0 8px rgba(0,0,0,.85), 0 2px 6px rgba(0,0,0,.9);
+    white-space: pre-line;
+    padding: .35em .8em;
+    border-radius: .2em;
+    max-width: calc(100vw - 60px);
+    box-sizing: border-box;
+  }
+  #texte.visible { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="cadre" class="bas">
+  <div id="texte"></div>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  var CANAL = "chants-obs";
+  var CLE = "chants-obs-message";
+  var TAILLE_MIN = 16;
+
+  var cadre = document.getElementById("cadre");
+  var texte = document.getElementById("texte");
+
+  /* ---------- paramètres d'URL : ?pos=bas|centre|haut  ?taille=64  ?fond=0.55 ---------- */
+  var q = new URLSearchParams(window.location.search);
+
+  var pos = q.get("pos");
+  if (pos !== "bas" && pos !== "centre" && pos !== "haut") pos = "bas";
+
+  var tailleBase = parseInt(q.get("taille"), 10);
+  if (!(tailleBase > 0)) tailleBase = 64;
+
+  var fond = parseFloat(q.get("fond"));
+  if (isNaN(fond)) fond = 0.55;
+  fond = Math.max(0, Math.min(1, fond));
+
+  cadre.className = pos;
+  texte.style.fontSize = tailleBase + "px";
+  texte.style.background = "rgba(0,0,0," + fond + ")";
+
+  /* ---------- réduction automatique si la ligne est trop longue ---------- */
+  var FAMILLE = '"Segoe UI", "Helvetica Neue", Arial, sans-serif';
+  var toile = document.createElement("canvas");
+  var pinceau = toile.getContext("2d");
+  var lignesCourantes = [];
+
+  function tailleAdaptee(lignes) {
+    var t = tailleBase;
+    var dispo = window.innerWidth - 60 - Math.round(t * 1.6); /* marges + padding du bloc */
+    pinceau.font = "700 " + t + "px " + FAMILLE;
+    var max = 0;
+    for (var i = 0; i < lignes.length; i++) {
+      var w = pinceau.measureText(lignes[i]).width;
+      if (w > max) max = w;
+    }
+    if (max > dispo && max > 0) {
+      t = Math.floor(t * dispo / max);
+      if (t < TAILLE_MIN) t = TAILLE_MIN;
+    }
+    return t;
+  }
+
+  function afficherLignes(lignes) {
+    lignesCourantes = lignes;
+    texte.style.fontSize = tailleAdaptee(lignes) + "px";
+    texte.textContent = lignes.join("\n");
+    texte.classList.add("visible");
+  }
+
+  function masquer() {
+    texte.classList.remove("visible");
+  }
+
+  window.addEventListener("resize", function () {
+    if (lignesCourantes.length && texte.classList.contains("visible")) {
+      texte.style.fontSize = tailleAdaptee(lignesCourantes) + "px";
+    }
+  });
+
+  /* ---------- réception des messages (BroadcastChannel + repli localStorage) ---------- */
+  var dernierTs = 0;
+
+  function appliquer(msg) {
+    if (!msg || typeof msg !== "object") return;
+    if (msg.ts && msg.ts === dernierTs) return; /* déjà traité (le message arrive par 2 voies) */
+    if (msg.ts) dernierTs = msg.ts;
+    if (msg.type === "show" && msg.lignes && msg.lignes.length) {
+      afficherLignes(msg.lignes.slice(0, 2));
+    } else {
+      masquer();
+    }
+  }
+
+  if ("BroadcastChannel" in window) {
+    try {
+      var canal = new BroadcastChannel(CANAL);
+      canal.onmessage = function (e) { appliquer(e.data); };
+    } catch (e) {}
+  }
+
+  window.addEventListener("storage", function (e) {
+    if (e.key !== CLE || !e.newValue) return;
+    try { appliquer(JSON.parse(e.newValue)); } catch (err) {}
+  });
+
+  /* état courant au (re)chargement de la page */
+  try {
+    var brut = localStorage.getItem(CLE);
+    if (brut) appliquer(JSON.parse(brut));
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
