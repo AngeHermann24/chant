@@ -313,26 +313,26 @@
     },
     {
       "numero": "5",
-      "titre": "Je veux proclamer le nom de Jésus",
+      "titre": "Je veux proclamer le Nom de Jésus",
       "strophes": [
         {
           "type": "strophe",
           "lignes": [
-            "Je veux proclamer le nom de Jésus",
-            "Sur nos coeurs et sur chaque pensée"
+            "Je veux proclamer le Nom de Jésus",
+            "Sur nos cœurs et sur chaque pensée"
           ]
         },
         {
           "type": "strophe",
           "lignes": [
-            "Car je sais que la paix est dans ta présence",
-            "En toi Jésus"
+            "Car je sais que la paix est dans Ta présence",
+            "En Toi Jésus"
           ]
         },
         {
           "type": "strophe",
           "lignes": [
-            "Je veux proclamer le nom de Jésus",
+            "Je veux proclamer le Nom de Jésus",
             "Jusqu'à ce que les chaînes soient brisées"
           ]
         },
@@ -346,15 +346,15 @@
         {
           "type": "refrain",
           "lignes": [
-            "Ton nom est puissant",
-            "Et Ton nom guérit"
+            "Ton Nom est puissant",
+            "Et Ton Nom guérit"
           ]
         },
         {
           "type": "refrain",
           "lignes": [
-            "Ton nom est vie",
-            "Tu brises les chaines"
+            "Ton Nom est vie",
+            "Tu brises les chaînes"
           ]
         },
         {
@@ -367,7 +367,7 @@
         {
           "type": "pont",
           "lignes": [
-            "Déclarons le sur les monts",
+            "Déclarons-le sur les monts",
             "Jésus dans nos rues"
           ]
         },
@@ -382,7 +382,7 @@
           "type": "pont",
           "lignes": [
             "Jésus sur nos familles",
-            "Proclamons son saint Nom Jésus."
+            "Proclamons Son saint Nom, Jésus."
           ]
         }
       ]
