@@ -100,6 +100,122 @@
           ]
         }
       ]
+    },
+    {
+      "numero": "3",
+      "titre": "Saint, saint, saint — Ohohoh Roi",
+      "strophes": [
+        {
+          "type": "strophe",
+          "lignes": [
+            "Ohohoh",
+            "Chantons saint saint saint"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Tu es très saint",
+            "Ohohoh Roi"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Les rois se sont succédé",
+            "Et les trônes ont disparu"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Mais ton royaume est éternel",
+            "Ohohoh Roi"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Avant le temps tu existais",
+            "Ta parole créa l'univers"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Oui, Tu es Dieu et Tu règnes",
+            "Ohohoh Roi"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Oh Roi des Rois",
+            "Oh Roi des Rois"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Ton royaume est éternel",
+            "Toi notre Roi"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Les anges s'inclinent devant ton trône",
+            "Et les vieillards jettent leur couronne"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Chantons saint saint saint",
+            "Tu es très saint"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Ohohoh Roi"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Assemblés pour T'adorer",
+            "Prosternés devant le Roi"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Chantons saint saint saint",
+            "Tu es très saint"
+          ]
+        },
+        {
+          "type": "strophe",
+          "lignes": [
+            "Ohohoh Roi"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Oh Roi des Rois",
+            "Oh Roi des Rois"
+          ]
+        },
+        {
+          "type": "refrain",
+          "lignes": [
+            "Ton royaume est éternel",
+            "Toi notre Roi"
+          ]
+        }
+      ]
     }
   ]
 }
